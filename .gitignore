@@ -1,11 +1,16 @@
+Debug/
+.vs/
+
 # Prerequisites
 *.d
+*.user
 
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+*.ipch
 
 # Precompiled Headers
 *.gch

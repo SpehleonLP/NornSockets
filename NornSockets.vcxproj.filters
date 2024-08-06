@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXBench.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXCancellationRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXConnectionState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXDNSLookup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXExponentialBackoff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXGetFreePort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXGzipCodec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXHttp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXHttpClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXHttpServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXNetSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSelectInterrupt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSelectInterruptEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSelectInterruptFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSelectInterruptPipe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSetThreadName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketAppleSSL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketConnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketMbedTLS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketOpenSSL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXSocketTLSOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXStrCaseCompare.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXUdpSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXUrlParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXUserAgent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXUuid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketCloseConstants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketHandshake.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketHttpHeaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateCodec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketProxyServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXWebSocket\ixwebsocket\IXWebSocketTransport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DebugLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WebsocketServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Support.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\localserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SharedMemoryInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Posix\PosixDebugLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Posix\PosixSMI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Windows\VivariumInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Windows\WindowsDebugLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Windows\WindowsSMI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QR-Code-generator\c\qrcodegen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXBase64.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXBench.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXCancellationRequest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXConnectionState.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXDNSLookup.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXExponentialBackoff.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXGetFreePort.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXGzipCodec.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXHttp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXHttpClient.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXHttpServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXNetSystem.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXProgressCallback.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSelectInterrupt.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSelectInterruptEvent.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSelectInterruptFactory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSelectInterruptPipe.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSetThreadName.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketAppleSSL.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketConnect.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketFactory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketMbedTLS.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketOpenSSL.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXSocketTLSOptions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXStrCaseCompare.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXUdpSocket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXUniquePtr.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXUrlParser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXUserAgent.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXUtf8Validator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXUuid.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketCloseConstants.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketCloseInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketErrorInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketHandshake.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketHandshakeKeyGen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketHttpHeaders.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketInitResult.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketMessage.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketMessageType.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketOpenInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflate.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateCodec.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateOptions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketProxyServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketSendData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketSendInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketTransport.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXWebSocket\ixwebsocket\IXWebSocketVersion.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SharedMemoryInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DebugLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WebsocketServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Support.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\localserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stb_bmp_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Posix\PosixDebugLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Posix\PosixSMI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Windows\VivariumInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Windows\WindowsDebugLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Windows\WindowsSMI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QR-Code-generator\c\qrcodegen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

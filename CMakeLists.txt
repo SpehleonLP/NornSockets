@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.5)
+
+project(NornSockets LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(src IXWebSocket QR-Code-generator/c)
+
+add_executable(NornSockets
+   src/DebugLog.cpp src/DebugLog.h src/main.cpp src/SharedMemoryInterface.cpp src/SharedMemoryInterface.h src/Support.cpp src/Support.h src/WebsocketServer.cpp src/WebsocketServer.h
+   src/Windows/VivariumInterface.cpp src/Windows/VivariumInterface.h src/Windows/WindowsDebugLog.cpp src/Windows/WindowsDebugLog.h src/Windows/WindowsSMI.cpp src/Windows/WindowsSMI.h
+   src/Posix/PosixDebugLog.cpp src/Posix/PosixDebugLog.h src/Posix/PosixSMI.cpp src/Posix/PosixSMI.h
+   src/localserver.h src/localserver.cpp
+   QR-Code-generator/c/qrcodegen.c QR-Code-generator/c/qrcodegen.h
+   src/stb_bmp_write.h
+   IXWebSocket/ixwebsocket/IXBase64.h IXWebSocket/ixwebsocket/IXBench.cpp IXWebSocket/ixwebsocket/IXBench.h IXWebSocket/ixwebsocket/IXCancellationRequest.cpp IXWebSocket/ixwebsocket/IXCancellationRequest.h IXWebSocket/ixwebsocket/IXConnectionState.cpp IXWebSocket/ixwebsocket/IXConnectionState.h IXWebSocket/ixwebsocket/IXDNSLookup.cpp IXWebSocket/ixwebsocket/IXDNSLookup.h IXWebSocket/ixwebsocket/IXExponentialBackoff.cpp IXWebSocket/ixwebsocket/IXExponentialBackoff.h IXWebSocket/ixwebsocket/IXGetFreePort.cpp IXWebSocket/ixwebsocket/IXGetFreePort.h IXWebSocket/ixwebsocket/IXGzipCodec.cpp IXWebSocket/ixwebsocket/IXGzipCodec.h IXWebSocket/ixwebsocket/IXHttp.cpp IXWebSocket/ixwebsocket/IXHttp.h IXWebSocket/ixwebsocket/IXHttpClient.cpp IXWebSocket/ixwebsocket/IXHttpClient.h IXWebSocket/ixwebsocket/IXHttpServer.cpp IXWebSocket/ixwebsocket/IXHttpServer.h IXWebSocket/ixwebsocket/IXNetSystem.cpp IXWebSocket/ixwebsocket/IXNetSystem.h IXWebSocket/ixwebsocket/IXProgressCallback.h IXWebSocket/ixwebsocket/IXSelectInterrupt.cpp IXWebSocket/ixwebsocket/IXSelectInterrupt.h IXWebSocket/ixwebsocket/IXSelectInterruptEvent.cpp IXWebSocket/ixwebsocket/IXSelectInterruptEvent.h IXWebSocket/ixwebsocket/IXSelectInterruptFactory.cpp IXWebSocket/ixwebsocket/IXSelectInterruptFactory.h IXWebSocket/ixwebsocket/IXSelectInterruptPipe.cpp IXWebSocket/ixwebsocket/IXSelectInterruptPipe.h IXWebSocket/ixwebsocket/IXSetThreadName.cpp IXWebSocket/ixwebsocket/IXSetThreadName.h IXWebSocket/ixwebsocket/IXSocket.cpp IXWebSocket/ixwebsocket/IXSocket.h IXWebSocket/ixwebsocket/IXSocketAppleSSL.cpp IXWebSocket/ixwebsocket/IXSocketAppleSSL.h IXWebSocket/ixwebsocket/IXSocketConnect.cpp IXWebSocket/ixwebsocket/IXSocketConnect.h IXWebSocket/ixwebsocket/IXSocketFactory.cpp IXWebSocket/ixwebsocket/IXSocketFactory.h IXWebSocket/ixwebsocket/IXSocketMbedTLS.cpp IXWebSocket/ixwebsocket/IXSocketMbedTLS.h IXWebSocket/ixwebsocket/IXSocketOpenSSL.cpp IXWebSocket/ixwebsocket/IXSocketOpenSSL.h IXWebSocket/ixwebsocket/IXSocketServer.cpp IXWebSocket/ixwebsocket/IXSocketServer.h IXWebSocket/ixwebsocket/IXSocketTLSOptions.cpp IXWebSocket/ixwebsocket/IXSocketTLSOptions.h IXWebSocket/ixwebsocket/IXStrCaseCompare.cpp IXWebSocket/ixwebsocket/IXStrCaseCompare.h IXWebSocket/ixwebsocket/IXUdpSocket.cpp IXWebSocket/ixwebsocket/IXUdpSocket.h IXWebSocket/ixwebsocket/IXUniquePtr.h IXWebSocket/ixwebsocket/IXUrlParser.cpp IXWebSocket/ixwebsocket/IXUrlParser.h IXWebSocket/ixwebsocket/IXUserAgent.cpp IXWebSocket/ixwebsocket/IXUserAgent.h IXWebSocket/ixwebsocket/IXUtf8Validator.h IXWebSocket/ixwebsocket/IXUuid.cpp IXWebSocket/ixwebsocket/IXUuid.h IXWebSocket/ixwebsocket/IXWebSocket.cpp IXWebSocket/ixwebsocket/IXWebSocket.h IXWebSocket/ixwebsocket/IXWebSocketCloseConstants.cpp IXWebSocket/ixwebsocket/IXWebSocketCloseConstants.h IXWebSocket/ixwebsocket/IXWebSocketCloseInfo.h IXWebSocket/ixwebsocket/IXWebSocketErrorInfo.h IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp IXWebSocket/ixwebsocket/IXWebSocketHandshake.h IXWebSocket/ixwebsocket/IXWebSocketHandshakeKeyGen.h IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h IXWebSocket/ixwebsocket/IXWebSocketInitResult.h IXWebSocket/ixwebsocket/IXWebSocketMessage.h IXWebSocket/ixwebsocket/IXWebSocketMessageType.h IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateOptions.cpp IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateOptions.h IXWebSocket/ixwebsocket/IXWebSocketProxyServer.cpp IXWebSocket/ixwebsocket/IXWebSocketProxyServer.h IXWebSocket/ixwebsocket/IXWebSocketSendData.h IXWebSocket/ixwebsocket/IXWebSocketSendInfo.h IXWebSocket/ixwebsocket/IXWebSocketServer.cpp IXWebSocket/ixwebsocket/IXWebSocketServer.h IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp IXWebSocket/ixwebsocket/IXWebSocketTransport.h IXWebSocket/ixwebsocket/IXWebSocketVersion.h)
+
+include(GNUInstallDirs )
+install(TARGETS NornSockets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+set_target_properties(NornSockets PROPERTIES LINKER_LANGUAGE CXX)
