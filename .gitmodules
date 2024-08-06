@@ -1,0 +1,6 @@
+[submodule "QR-Code-generator"]
+	path = QR-Code-generator
+	url = https://github.com/nayuki/QR-Code-generator.git
+[submodule "IXWebSocket"]
+	path = IXWebSocket
+	url = https://github.com/machinezone/IXWebSocket.git
