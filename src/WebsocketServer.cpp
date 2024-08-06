@@ -46,7 +46,7 @@ WebsocketServer::WebsocketServer()
 	m_server->start();
 
 	auto url = m_server->getHost();
-	fprintf(stdout, "Opened websocket server %s:%d", url.c_str(), m_server->getPort());
+	fprintf(stdout, "Opened websocket server %s:%d\n", url.c_str(), m_server->getPort());
 }
 
 WebsocketServer::~WebsocketServer()
@@ -66,7 +66,7 @@ void WebsocketServer::OnGameOpened(SharedMemoryInterface* _interface)
 	this->_interface = _interface;
 
 	char buffer[256];
-	snprintf(buffer, sizeof(buffer), "%s %s %d.%d\n%s", "OnGameOpened", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
+	snprintf(buffer, sizeof(buffer), "%s %s %d.%d %s", "OnGameOpened", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
 	std::string message = buffer;
 
 	fprintf(stderr, "%s\n", buffer);
@@ -92,7 +92,7 @@ void WebsocketServer::OnGameClosed(SharedMemoryInterface* _interface)
 	this->_interface = nullptr;
 
 	char buffer[256];
-	snprintf(buffer, sizeof(buffer), "%s %s %d.%d\n%s", "OnGameClosed", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
+	snprintf(buffer, sizeof(buffer), "%s %s %d.%d %s", "OnGameClosed", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
 	std::string message = buffer;
 
 	fprintf(stderr, "%s\n", buffer);
@@ -201,7 +201,7 @@ void WebsocketServer::OnMessageCallback(std::weak_ptr<ix::WebSocket> webSocket, 
 		if (_interface)
 		{
 			char buffer[256];
-			snprintf(buffer, sizeof(buffer), "%s %s %d.%d\n%s", "OnGameOpened", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
+			snprintf(buffer, sizeof(buffer), "%s %s %d.%d %s", "OnGameOpened", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
 			agent->sendUtf8Text(buffer);
 		}
 
@@ -258,7 +258,14 @@ void WebsocketServer::OnMessageCallback(std::weak_ptr<ix::WebSocket> webSocket, 
 					}
 				}
 
-				result = m_localServer->ProcessMessage(code, c_str, binaryBuffer);
+				if(code == LocalServer::OOPE)
+				{
+					Parse(c_str, agent);
+				}
+				else
+				{
+					result = m_localServer->ProcessMessage(code, c_str, binaryBuffer);
+				}
 			}
 		}
 		else

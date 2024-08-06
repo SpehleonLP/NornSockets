@@ -29,6 +29,7 @@ using Response = SharedMemoryInterface::Response;
 		QRCD = MAKEFOURCC('Q', 'R', 'C', 'D'),
 		LOG  = MAKEFOURCC('L', 'O', 'G', '\0'),
 		DBG  = MAKEFOURCC('D', 'B', 'G', '\0'),
+		OOPE = MAKEFOURCC('O', 'O', 'P', 'E'),
 	};
 
 // split into args.

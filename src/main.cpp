@@ -65,9 +65,10 @@ int main()
 
 	std::signal(SIGINT, signalHandler);
 	std::signal(SIGTERM, signalHandler);
-	std::signal(SIGPIPE, SIG_IGN);
 
-#ifdef _WIN32
+#ifndef _WIN32
+	std::signal(SIGPIPE, SIG_IGN);
+#else
 	if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
 		fprintf(stderr, "Could not set control handler: %s\n", GetLastErrorAsString().c_str());
 		return 1;
@@ -85,13 +86,6 @@ int main()
 	std::unique_ptr<WebsocketServer>	   server(new WebsocketServer);
 	std::unique_ptr<SharedMemoryInterface> interface;
 	std::unique_ptr<DebugLog>			  debugLog;
-
-	debugLog = DebugLog::Open();
-	if(debugLog)
-	{
-		 debugLog->write("test text\n");
-		 debugLog->flush();
-	}
 
 	bool isDebugLogOpen = false;
 	bool isC2E = false;
@@ -125,22 +119,16 @@ int main()
 		}
 
 		auto log = DebugLog::GetDebugLog();
+		bool wrote = false;
 
 		if(log.size())
 		{
 			if (isDebugLogOpen)
 				isDebugLogOpen = !debugLog->isClosed();
 
-			if (debugLog == nullptr)
+			for(auto & item : log)
 			{
-				debugLog = DebugLog::Open();
-				isDebugLogOpen = true;
-			}
-
-			if (!isDebugLogOpen)
-			{
-				for(auto & item : log)
-					debugLog->write(item);
+				fprintf(stdout, "%.*s", int(item.size()), item.data());
 			}
 		}
 
@@ -150,9 +138,8 @@ int main()
 		}
 		else if(isC2E)
 		{
-		//	auto response = interface->send("DBG: OUTS \"Test Text\" DBG: POLL");
-
-			auto response = interface->send("OUTS \"Test Text\"");
+			bool wrote = false;
+			auto response = interface->send("DBG: POLL");
 
 			if (response.isError == true)
 			{
@@ -190,36 +177,32 @@ int main()
 					}
 					else if (curr != 0)
 					{
-						if (debugLog == nullptr)
-						{
-							debugLog = DebugLog::Open();
-							isDebugLogOpen = true;
-						}
-
-						if (isDebugLogOpen)
-							isDebugLogOpen |= debugLog->write(std::string_view(txt + start, txt + curr));
-
+						wrote = true;
+						fprintf(stdout, "%.*s", int(curr-start), txt+start);
 						start = line_end+1;
 					}
 				}
 
 				if (start < response.text.size()-1)
 				{
-					if (debugLog == nullptr)
-					{
-						debugLog = DebugLog::Open();
-						isDebugLogOpen = true;
-					}
-
-					if(isDebugLogOpen)
-						isDebugLogOpen |= debugLog->write(std::string_view(txt + start, txt + response.text.size()));
+					wrote = true;
+					fprintf(stdout, "%.*s", int(response.text.size()-start), txt+start);
 				}
 			}
 
-			if(debugLog)
-				 debugLog->flush();
+			if(wrote)
+			{
+// TODO: if deamon open window to display stdout.
+				if (debugLog == nullptr)
+				{
+				///	debugLog = DebugLog::Open();
+				//	isDebugLogOpen = true;
+				}
 
-			_mainSleep.wait_for(lock, 500ms);
+				fflush(stdout);
+			}
+
+			_mainSleep.wait_for(lock, 200ms);
 		}
 	}
 

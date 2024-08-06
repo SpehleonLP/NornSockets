@@ -9,7 +9,7 @@ public:
 struct Response;
 	enum
 	{
-		Creatures1Version = 1,
+		Creatures1Version = 20,
 	};
 
 	static std::string cp1252FromUtf8(std::string const&);

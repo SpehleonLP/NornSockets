@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Windows\CreaturesSession.cpp" />
+    <ClCompile Include="src\Windows\DdeSession.cpp" />
     <ClCompile Include="QR-Code-generator\c\qrcodegen.c" />
     <ClCompile Include="src\localserver.cpp" />
     <ClCompile Include="src\DebugLog.cpp" />
@@ -208,6 +210,8 @@
     <ClCompile Include="src\Windows\WindowsSMI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Windows\CreaturesSession.h" />
+    <ClInclude Include="src\Windows\DdeSession.h" />
     <ClInclude Include="QR-Code-generator\c\qrcodegen.h" />
     <ClInclude Include="src\localserver.h" />
     <ClInclude Include="src\DebugLog.h" />

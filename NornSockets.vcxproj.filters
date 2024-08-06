@@ -168,6 +168,12 @@
     <ClCompile Include="QR-Code-generator\c\qrcodegen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Windows\DdeSession.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Windows\CreaturesSession.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IXWebSocket\ixwebsocket\IXBase64.h">
@@ -363,6 +369,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QR-Code-generator\c\qrcodegen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Windows\DdeSession.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Windows\CreaturesSession.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

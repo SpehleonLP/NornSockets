@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>WebSocket Communication</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+		}
+
+		#connectButton, #sendButton {
+			margin: 10px 0;
+		}
+
+		#messages {
+			border: 1px solid #ccc;
+			padding: 10px;
+			height: 100px;
+			overflow-y: auto;
+		}
+	</style>
+</head>
+<body>
+	<button id="connectButton">First: Connect to WebSocket</button>
+	<br>
+	<textarea id="textInput" rows="10" cols="50" placeholder="Then type your CAOS here..."></textarea>
+	<br>
+	<button id="sendButton">Then Hit Send!</button>
+	<br>
+	<div id="messages"></div>
+
+	<script>let socket;
+
+        document.getElementById('connectButton').addEventListener('click', () => {
+            socket = new WebSocket('ws://localhost:34013');
+            socket.onopen = () => {
+                console.log('WebSocket connection established');
+                document.getElementById('messages').innerHTML += '<p>WebSocket connection established</p>';
+            };
+            socket.onmessage = (event) => {
+                if (typeof event.data === 'string') {
+                    document.getElementById('messages').innerHTML += '<p>' + event.data + '</p>';
+                }
+            };
+            socket.onclose = () => {
+                console.log('WebSocket connection closed');
+                document.getElementById('messages').innerHTML += '<p>WebSocket connection closed</p>';
+            };
+            socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                document.getElementById('messages').innerHTML += '<p>WebSocket error: ' + error + '</p>';
+            };
+        });
+
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const message = document.getElementById('textInput').value;
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+                console.log('Message sent:', message);
+                document.getElementById('messages').innerHTML += '<p>Sent: ' + message + '</p>';
+            } else {
+                console.error('WebSocket is not open');
+                document.getElementById('messages').innerHTML += '<p>Error: WebSocket is not open</p>';
+            }
+        });</script>
+</body>
+</html>

@@ -498,6 +498,9 @@ LocalServer::Response LocalServer::ProcessMessage(uint32_t code, std::string_vie
 	case LocalServer::DBG:
 		DebugLog::WriteDebugMessage(c_str);
 		break;
+	case LocalServer::OOPE:
+		DebugLog::WriteDebugMessage(c_str);
+		break;
 	}
 
 	return {};

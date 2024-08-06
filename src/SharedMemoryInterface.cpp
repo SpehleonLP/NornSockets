@@ -264,6 +264,14 @@ std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 
 		if (r < 1)
 			fprintf(stderr, "failed to get version of engine.\n");
+
+		/*
+		auto check = interface->send("targ norn dde: getb monk");
+		fprintf(stderr, "%s\n", check.text.c_str());
+		check = interface->send("targ norn dde: getb cnam");
+		fprintf(stderr, "%s\n", check.text.c_str());
+		check = interface->send("targ norn dde: getb ovvd");
+		fprintf(stderr, "%s\n", check.text.c_str());*/
 	}
 
 #endif
@@ -329,7 +337,10 @@ std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 		int r = sscanf(version.text.c_str(), "%d %d \"%255[^\"]\"", &interface->versionMajor, &interface->versionMinor, buffer);
 
 		if (r < 3)
+		{
 			fprintf(stderr, "failed to get version of engine.\n");
+			return nullptr;
+		}
 		else
 			interface->_name = *buffer == '"'? buffer+1 : buffer;
 	}

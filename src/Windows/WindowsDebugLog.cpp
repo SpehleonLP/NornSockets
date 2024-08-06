@@ -112,7 +112,7 @@ bool WindowsDebugLog::isClosed()
 	return exitCode != STILL_ACTIVE;
 }
 
-bool WindowsDebugLog::flush()
+void WindowsDebugLog::flush()
 {
 	if(wrote)
 	{
@@ -122,7 +122,6 @@ bool WindowsDebugLog::flush()
 		if (!FlushFileBuffers(hWritePipe)) {
 			auto error = GetLastErrorAsString();
 			fprintf(stderr, "Failed to flush pipe: %s\n", error.c_str());
-			return false;
 		}
 	}
 }

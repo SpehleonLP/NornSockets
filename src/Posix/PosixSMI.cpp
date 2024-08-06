@@ -21,7 +21,7 @@ std::unique_ptr<SharedMemoryInterface> PosixSMI::Create()
 {
 	int port = 0;
 	int _socket = 0;
-	struct sockaddr_in serv_addr;
+	sockaddr_in serv_addr;
 	memset(&serv_addr, 0, sizeof(serv_addr));
 
 	static std::filesystem::path path;
@@ -63,47 +63,147 @@ std::unique_ptr<SharedMemoryInterface> PosixSMI::Create()
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(port);
 
+	return std::unique_ptr<SharedMemoryInterface>(new PosixSMI(serv_addr));
+}
+
+PosixSMI::PosixSMI(sockaddr_in & serv_addr) :
+	serv_addr(serv_addr)
+{
+};
+
+PosixSMI::~PosixSMI()
+{
+}
+
+
+PosixSMI::Response PosixSMI::send1252(std::string & message)
+{
+	if(_isClosed)
+	{
+		return Response{
+			.text= "Port is not open.",
+			.isError=true,
+			.isBinary=false,
+		};
+	}
+
+	if(message.capacity() < message.size()+8)
+		message.reserve(message.size()+8);
+
+	const char * error = nullptr;
+	std::string response;
+	std::string_view retn;
+
+	auto chunks = ChunkMessage(message, 64000-10);
+	_timeout = false;
+
+	char buffer[8];
+	message.resize(message.size()+8, '\0');
+
+	for(std::string_view & chunk : chunks)
+	{
+		try
+		{
+			Socket socket(*this);
+
+			memcpy(buffer, &chunk.back(), 8);
+			strncpy(const_cast<char*>(&chunk.back()+1), "\nrscr\n", 8);
+			// second time in this loop causes: SIGPIPE: broken pipe
+			auto r = ::send(socket._socket, chunk.data(), chunk.size()+8, MSG_NOSIGNAL);
+			memcpy(const_cast<char*>(&chunk.back()), buffer, 8);
+
+			if(r == -1)
+			{
+				error = socket.HandleError();
+
+				if(error)
+				{
+					return Response{
+						.text= error,
+						.isError=true,
+						.isBinary=false,
+					};
+				}
+			}
+
+		// read the reply
+			do
+			{
+				auto retn = socket.read_message(error);
+				response += retn;
+			} while(retn.size() == BUFFER_SIZE);
+
+			if(error)
+			{
+				return Response{
+					.text= error,
+					.isError=true,
+					.isBinary=false,
+				};
+			}
+		}
+		catch(std::exception & e)
+		{
+			_isClosed = true;
+
+			return Response{
+				.text= e.what(),
+				.isError=true,
+				.isBinary=false,
+			};
+		}
+	}
+
+	return Response{
+		.text= std::move(response),
+		.isError=false,
+		.isBinary=false,
+	};
+}
+
+
+bool PosixSMI::isClosed()
+{
+// just count on us polling the socket for debug information as notifying us when it closed i guess?
+	return _isClosed;
+}
+
+PosixSMI::Socket::Socket(PosixSMI &parent) :
+	parent(parent)
+{
+	sockaddr_in& serv_addr = parent.serv_addr;
+
 	if(inet_aton("127.0.0.1", (struct in_addr *) &(serv_addr.sin_addr.s_addr)) < 0)
 	{
-		fprintf(stderr, "Invalid address/ Address not supported.\n");
-		return nullptr;
+		throw std::runtime_error("Invalid address/ Address not supported.");
 	}
 
 	// Create socket
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		fprintf(stderr, "Socket creation error: %s\n", strerror(errno));
-		return nullptr;
+		throw std::runtime_error("Socket creation error: " + std::string(strerror(errno)));
 	}
 
 	// Connect to the server
 	if (connect(_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
 
 		close(_socket);
-		fprintf(stderr, "Connection failed: %s\n", strerror(errno));
-		return nullptr;
+		throw std::runtime_error("Connection failed: " + std::string(strerror(errno)));
 	}
 
-	return std::unique_ptr<SharedMemoryInterface>(new PosixSMI(_socket));
-}
-
-PosixSMI::PosixSMI(int socket) :
-	_socket(socket)
-{
 	int _enable{1};
-	int _keepAliveTime{45};
 
 	struct timeval timeout;
-	timeout.tv_sec = 0;  // 0 seconds
-	timeout.tv_usec = 100 * 1000; // 100 miliseconds
+	memset(&timeout, 0, sizeof(timeout));
+	timeout.tv_sec = 60;  // 0 seconds
+	timeout.tv_usec = 0; // 100 miliseconds
 
-	setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, &_enable, sizeof(_enable));
-	setsockopt(_socket, IPPROTO_TCP, TCP_KEEPIDLE, &_keepAliveTime, sizeof(_keepAliveTime));
 	setsockopt(_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 	setsockopt(_socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &_enable, sizeof(_enable));
-};
+}
 
-PosixSMI::~PosixSMI()
+
+PosixSMI::Socket::~Socket()
 {
 	auto error = close(_socket);
 
@@ -123,91 +223,7 @@ PosixSMI::~PosixSMI()
 	}
 }
 
-
-PosixSMI::Response PosixSMI::send1252(std::string & message)
-{
-	if(message.capacity() < message.size()+8)
-		message.reserve(message.size()+8);
-
-	const char * error = nullptr;
-	std::string response;
-	std::string_view retn;
-
-	auto chunks = ChunkMessage(message, 64000-10);
-	_timeout = false;
-
-	char buffer[8];
-	message.resize(message.size()+8, '\0');
-
-	for(std::string_view & chunk : chunks)
-	{
-		memcpy(buffer, &chunk.back(), 8);
-		strncpy(const_cast<char*>(&chunk.back()+1), "\nrscr\n", 8);
-		// second time in this loop causes: SIGPIPE: broken pipe
-		auto r = ::send(_socket, chunk.data(), chunk.size()+8, MSG_NOSIGNAL);
-		memcpy(const_cast<char*>(&chunk.back()), buffer, 8);
-
-		if(r == -1)
-		{
-			error = HandleError();
-
-			if(error)
-			{
-				return Response{
-					.text= error,
-					.isError=true,
-					.isBinary=false,
-				};
-			}
-		}
-
-	// read the reply
-		do
-		{
-			auto retn = read_message(error);
-			response += retn;
-		} while(retn.size() == BUFFER_SIZE);
-
-		if(error)
-		{
-			return Response{
-				.text= error,
-				.isError=true,
-				.isBinary=false,
-			};
-		}
-	}
-
-// just try it a second time (i guess)?
-	if(_timeout)
-	{
-		do
-		{
-			auto retn = read_message(error);
-			response += retn;
-		} while(retn.size() == BUFFER_SIZE);
-
-		if(error)
-		{
-			return Response{
-				.text= error,
-				.isError=true,
-				.isBinary=false,
-			};
-		}
-
-		_timeout = false;
-
-	}
-
-	return Response{
-		.text= std::move(response),
-		.isError=false,
-		.isBinary=false,
-	};
-}
-
-std::string_view PosixSMI::read_message(const char *& error)
+std::string_view PosixSMI::Socket::read_message(const char *& error)
 {
 	errno = 0;
 	static char buffer[BUFFER_SIZE];
@@ -230,7 +246,7 @@ std::string_view PosixSMI::read_message(const char *& error)
 	return {};
 }
 
-const char * PosixSMI::HandleError()
+const char * PosixSMI::Socket::HandleError()
 {
 	auto error = errno;
 	errno = 0;
@@ -242,19 +258,19 @@ const char * PosixSMI::HandleError()
 		case EBADF:
 			throw std::logic_error("socket not a valid file descriptor?");
 		case ECONNRESET:
-			_isClosed = true;
+			parent._isClosed = true;
 			return "Connection reset by host";
 			break;
 		case EINTR:
-			_isClosed = true;
+			parent._isClosed = true;
 			return "Caught signal";
 			break;
 		case EPIPE:
-			_isClosed = true;
+			parent._isClosed = true;
 			_connectionReset = true;
 			return 	"Connection reset by peer";
 		case EINVAL:
-			_isClosed = true;
+			parent._isClosed = true;
 			return "No out of band data available";
 			break;
 		case ENOTCONN:
@@ -264,18 +280,11 @@ const char * PosixSMI::HandleError()
 		case EOPNOTSUPP:
 			throw std::logic_error("flags not supported.");
 		case ETIMEDOUT:
-			_timeout = true;
+			parent._timeout = true;
 			break;
 	}
 
 	return nullptr;
-}
-
-
-bool PosixSMI::isClosed()
-{
-// just count on us polling the socket for debug information as notifying us when it closed i guess?
-	return _isClosed;
 }
 
 
