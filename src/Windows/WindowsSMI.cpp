@@ -5,7 +5,10 @@
 
 #ifdef _WIN32
 
-WindowsSMI::WindowsSMI() = default;
+WindowsSMI::WindowsSMI()
+{
+	_engine = "C2E";
+}
 
 WindowsSMI::~WindowsSMI()
 {
@@ -15,6 +18,32 @@ WindowsSMI::~WindowsSMI()
 	if (memory_ptr)		UnmapViewOfFile(memory_ptr);
 	if (memory_handle)	CloseHandle(memory_handle);
 	if (creator_process_handle) CloseHandle(creator_process_handle);
+}
+
+void WindowsSMI::Initialize()
+{
+	_workingDirectory = GetWorkingDirectory(memory_ptr->pid);
+
+	std::string cmd = "outv vmjr outs \" \" outv vmnr outs \" \" outx gnam";
+	auto version = WindowsSMI::send1252(cmd);
+
+	if (version.isError)
+	{
+		fprintf(stderr, "%s", version.text.c_str());
+	}
+	else
+	{
+		char buffer[256];
+		buffer[0] = 0;
+		int r = sscanf(version.text.c_str(), "%d %d \"%255[^\"]\"", &versionMajor, &versionMinor, buffer);
+
+		if (r < 3)
+		{
+			fprintf(stderr, "failed to get version of engine.\n");
+		}
+		else
+			_name = *buffer == '"'? buffer+1 : buffer;
+	}
 }
 
 std::unique_ptr<SharedMemoryInterface> WindowsSMI::Open(const char* name)
@@ -73,6 +102,7 @@ std::unique_ptr<SharedMemoryInterface> WindowsSMI::Open(const char* name)
 
 	// Open a handle to the creator process
 	r->creator_process_handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, r->memory_ptr->pid);
+	r->Initialize();
 
 	return std::unique_ptr<SharedMemoryInterface>(r.release());
 }
@@ -227,5 +257,6 @@ bool WindowsSMI::isClosed()
 
 	return _isClosed;
 }
+
 
 #endif

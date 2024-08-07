@@ -14,6 +14,7 @@ public:
 	HSZ  createDDEString(const char*);
 	void freeDDEString(HSZ & s);
 
+	unsigned int getPartnerPid(HSZ service, HSZ topic);
 	HCONV connectConversation(HSZ service, HSZ topic);
 	void disconnectConversation(HCONV & conversation);
 

@@ -7,7 +7,7 @@ It will also handle things for you like text encoding standards (webapps use uni
 
 ## Known issues
 
-* server should be able to determine file path to current genetics folder, it can't.
+* server should be able to determine file path where worlds are saved (c2e) it can't.
 
 ## How it works
 * every second or so NornSockets will poll the system to see if one of the games is open and try to access the shared memory interface/DDE interface/TCP interface.
@@ -46,9 +46,7 @@ Nornsocket's will poll C2e's debug log every tick, the results will be filtered 
 
 While websockets messages in text mode are forwarded to the game, messages sent in binary mode are interpreted as being for the NornSockets server itself.
 
-Primarily these are used to read/write files in the server's directory.
-
-It should be reading/writing files in the open game's directory (this does not work).
+Primarily these are used to read/write files (not really tested but implemented in localserver.cpp).
 
 ### How to use:
 * Binary message format:

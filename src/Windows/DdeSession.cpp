@@ -25,7 +25,6 @@ DdeSession::~DdeSession()
 	uninitialiseDDE();
 }
 
-
 void DdeSession::initialiseDDE()
 {
 	if (DdeInitialize(&fDDEInstance, &VivariumInterfaceCallback, APPCLASS_STANDARD, 0) != DMLERR_NO_ERROR)
@@ -60,6 +59,21 @@ void DdeSession::freeDDEString(HSZ & s)
 		handleError();
 		s = 0;
 	}
+}
+
+unsigned int DdeSession::getPartnerPid(HSZ service, HSZ topic)
+{
+	auto hConv = connectConversation(service, topic);
+
+	DWORD pid{};
+	CONVINFO convInfo;
+	convInfo.cb = sizeof(CONVINFO);
+	if (DdeQueryConvInfo(hConv, QID_SYNC, &convInfo)) {
+		GetWindowThreadProcessId(convInfo.hwndPartner, &pid);
+	}
+
+	disconnectConversation(hConv);
+	return pid;
 }
 
 HCONV DdeSession::connectConversation(HSZ service, HSZ topic)

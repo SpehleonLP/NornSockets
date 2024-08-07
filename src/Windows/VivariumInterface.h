@@ -21,7 +21,7 @@ public:
 	bool isClosed() override;
 
 private:
-	HCONV fMonitor{};
+	uint32_t _pid{};
 	bool _isOpen{true};
 };
 

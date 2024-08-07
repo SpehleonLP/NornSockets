@@ -147,10 +147,10 @@ std::filesystem::path LocalServer::GetPath(std::string_view file)
 
 	if(world == false)
 	{
-		std::filesystem::path path = _interface->GetGameDirectory();
+		std::filesystem::path const& path = _interface->_workingDirectory;
 
 		if(path.empty() == false)
-			return (path /= directory) /= file;
+			return (path / directory) /= file;
 	}
 	else if(world == false)
 	{
@@ -252,6 +252,24 @@ LocalServer::Response LocalServer::ProcessMessage(uint32_t code, std::string_vie
 
 	switch(LocalServer::Commands(code))
 	{
+	case LocalServer::PATH:
+	{
+		if (_interface)
+		{
+			return Response{
+				.text = _interface->_workingDirectory.string(),
+				.isError = false,
+				.isBinary = false,
+			};
+		}
+
+		return Response{
+			.text = "Game is not open!",
+			.isError = true,
+			.isBinary = false,
+		};
+	} 
+	break;
 	case LocalServer::SAVE:
 		if(args.size() < 1)
 		{

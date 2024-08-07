@@ -6,6 +6,33 @@
 
 bool g_isDdeOpen = false;
 
+VivariumInterface::VivariumInterface(int major, int minor)
+{
+	_name = "Creatures";
+	_engine = "Vivarium";
+	versionMinor = minor;
+	versionMajor = major;
+
+	g_isDdeOpen = true;
+
+	if (isCreatures2())
+	{
+		_name += " 2";
+	}
+
+	_pid = CreaturesSession::GetSession()->getPartnerPid();
+
+	if(_pid)
+		_workingDirectory = SharedMemoryInterface::GetWorkingDirectory(_pid);
+}
+
+
+VivariumInterface::~VivariumInterface()
+{
+	g_isDdeOpen = false;
+}
+
+
 std::unique_ptr<SharedMemoryInterface> VivariumInterface::OpenVivarium()
 {
 	static std::string str = "dde: putv vrsn";
@@ -65,10 +92,33 @@ VivariumInterface::Response VivariumInterface::send1252(std::string & message)
 	}
 }
 
+bool isProcessRunning(DWORD pid) {
+	// Attempt to open the process with a minimal set of rights to query its status
+	HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+	if (hProcess == NULL) {
+		// If OpenProcess fails, the process might not exist or we don't have the permissions
+		return false;
+	}
+
+	DWORD exitCode;
+	if (GetExitCodeProcess(hProcess, &exitCode)) {
+		// If the process is still active, GetExitCodeProcess returns STILL_ACTIVE
+		CloseHandle(hProcess);
+		return (exitCode == STILL_ACTIVE);
+	}
+
+	// Close the process handle if we've finished checking
+	CloseHandle(hProcess);
+	return false;
+}
+
 bool VivariumInterface::isClosed()
 {
 	if (!_isOpen || !g_isDdeOpen) 
-		return false;
+		return true;
+
+	if(_pid)
+		return (_isOpen = !isProcessRunning(_pid));
 
 	auto session = CreaturesSession::GetSession();
 	auto fMonitor = session->connectConversation(session->fVivariumString, session->fSessionString);
@@ -81,27 +131,6 @@ bool VivariumInterface::isClosed()
 	}
 
 	return !_isOpen;
-}
-
-VivariumInterface::VivariumInterface(int major, int minor)
-{
-	_name = "Creatures";
-	_engine = "Vivarium";
-	versionMinor = minor;
-	versionMajor = major;
-
-	g_isDdeOpen = true;
-
-	if (isCreatures2())
-	{
-		_name += " 2";
-	}
-}
-
-
-VivariumInterface::~VivariumInterface()
-{
-	g_isDdeOpen = false;
 }
 
 

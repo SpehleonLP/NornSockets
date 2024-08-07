@@ -71,6 +71,11 @@ void WebsocketServer::OnGameOpened(SharedMemoryInterface* _interface)
 
 	fprintf(stderr, "%s\n", buffer);
 
+	if(_interface->_workingDirectory.empty() == false)
+	{
+		fprintf(stderr, "%s\n", _interface->_workingDirectory.string().c_str());
+	}
+
 	for (auto& item : _allConnections)
 	{
 		auto agent = item.lock();

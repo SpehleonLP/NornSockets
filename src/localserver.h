@@ -30,6 +30,7 @@ using Response = SharedMemoryInterface::Response;
 		LOG  = MAKEFOURCC('L', 'O', 'G', '\0'),
 		DBG  = MAKEFOURCC('D', 'B', 'G', '\0'),
 		OOPE = MAKEFOURCC('O', 'O', 'P', 'E'),
+		PATH = MAKEFOURCC('P', 'A', 'T', 'H'),
 	};
 
 // split into args.

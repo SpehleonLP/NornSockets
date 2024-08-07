@@ -3,9 +3,14 @@
 #include <memory>
 #include <string>
 
+
 class SharedMemoryInterface
 {
 public:
+#ifdef _WIN32
+using pid_t = unsigned int;
+#endif
+
 struct Response;
 	enum
 	{
@@ -31,14 +36,19 @@ struct Response;
 	virtual Response send1252(std::string &) = 0;
 	virtual bool isClosed() = 0;
 
+
 // server commands SAVE/LOAD/etc won't work if these aren't defined.
-	virtual std::filesystem::path GetGameDirectory()  { return {}; }
 	virtual std::filesystem::path GetWorldDirectory() { return {}; }
+
+	static std::filesystem::path GetWorkingDirectory(pid_t pid);
 
 	std::string _name;
 	std::string _engine;
 	int versionMajor{};
 	int versionMinor{};
+
+	std::filesystem::path _workingDirectory{};
+
 	bool isDDE() const { return _engine == "Vivarium"; }
 	bool isCreatures1() const { return versionMajor <= Creatures1Version && isDDE(); }
 	bool isCreatures2() const { return versionMajor > Creatures1Version && isDDE(); }

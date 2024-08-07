@@ -63,12 +63,46 @@ std::unique_ptr<SharedMemoryInterface> PosixSMI::Create()
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(port);
 
-	return std::unique_ptr<SharedMemoryInterface>(new PosixSMI(serv_addr));
+	if(inet_aton("127.0.0.1", (struct in_addr *) &(serv_addr.sin_addr.s_addr)) < 0)
+	{
+		throw std::runtime_error("Invalid address/ Address not supported.");
+	}
+
+	return std::unique_ptr<SharedMemoryInterface>(new PosixSMI(serv_addr, port));
 }
 
-PosixSMI::PosixSMI(sockaddr_in & serv_addr) :
+PosixSMI::PosixSMI(sockaddr_in & serv_addr, int port) :
 	serv_addr(serv_addr)
 {
+	_engine = "C2E";
+
+	try
+	{
+		_pid = GetPid(port);
+
+		if(_pid)
+		{
+			_workingDirectory = GetWorkingDirectory(_pid);
+		}
+
+		char buffer[256];
+		buffer[0] = 0;
+		std::string cmd = "outv vmjr outs \" \" outv vmnr\n outs \" \" outx gnam";
+		auto version = PosixSMI::send1252(cmd);
+
+		int r = sscanf(version.text.c_str(), "%d %d \"%255[^\"]\"", &versionMajor, &versionMinor, buffer);
+
+		if (r < 3)
+		{
+			fprintf(stderr, "failed to get version of engine.\n");
+		}
+		else
+			_name = *buffer == '"'? buffer+1 : buffer;
+	}
+	catch(std::exception & e)
+	{
+		fprintf(stderr, "failed to get working directory of engine: %s", e.what());
+	}
 };
 
 PosixSMI::~PosixSMI()
@@ -168,15 +202,36 @@ bool PosixSMI::isClosed()
 	return _isClosed;
 }
 
+
+pid_t PosixSMI::GetPid(int port)
+{
+	auto exec = [](const char* cmd) -> std::string {
+		std::array<char, 128> buffer;
+		std::string result;
+		std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+		if (!pipe) {
+			throw std::runtime_error("popen() failed!");
+		}
+		while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+			result += buffer.data();
+		}
+		return result;
+	};
+
+	auto command = "lsof -i tcp:" + std::to_string(port) + " | grep LISTEN";
+	std::string output = exec(command.c_str());
+
+	char process_name[64];
+	pid_t pid{};
+
+	sscanf(output.c_str(), "%63s %d", process_name, &pid);
+	return pid;
+}
+
 PosixSMI::Socket::Socket(PosixSMI &parent) :
 	parent(parent)
 {
 	sockaddr_in& serv_addr = parent.serv_addr;
-
-	if(inet_aton("127.0.0.1", (struct in_addr *) &(serv_addr.sin_addr.s_addr)) < 0)
-	{
-		throw std::runtime_error("Invalid address/ Address not supported.");
-	}
 
 	// Create socket
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {

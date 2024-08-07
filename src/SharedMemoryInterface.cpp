@@ -113,12 +113,12 @@ std::string SharedMemoryInterface::cp1252FromUtf8(std::string const& input)
 			}
 			else if (c >= 0xE0 && c <= 0xEF && i + 2 < input.length()) {
 				// 3-byte UTF-8 sequence
-				uint32_t codepoint = ((c & 0x0F) << 12) | ((input[i + 1] & 0x3F) << 6) | (input[i + 2] & 0x3F);
+				codepoint = ((c & 0x0F) << 12) | ((input[i + 1] & 0x3F) << 6) | (input[i + 2] & 0x3F);
 				i += 2; // Skip
 			}
 			else if (c >= 0xF0 && c <= 0xF7 && i + 3 < input.length()) {
 				// 3-byte UTF-8 sequence
-				uint32_t codepoint = ((((c & 0x0F) << 12) | ((input[i + 1] & 0x3F) << 6) | (input[i + 2] & 0x3F)) << 6) | (input[i + 3] & 0x3F);
+				codepoint = ((((c & 0x0F) << 12) | ((input[i + 1] & 0x3F) << 6) | (input[i + 2] & 0x3F)) << 6) | (input[i + 3] & 0x3F);
 				i += 3; // Skip
 			}
 
@@ -255,23 +255,7 @@ std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 
 	if (interface)
 	{
-		auto version = interface->send("dde: putv vrsn");
-		interface->_name = "Creatures";
-		interface->_engine = "Vivarium";
-		interface->versionMinor = 0;
-
-		int r = sscanf(version.text.c_str(), "%d", &interface->versionMajor);
-
-		if (r < 1)
-			fprintf(stderr, "failed to get version of engine.\n");
-
-		/*
-		auto check = interface->send("targ norn dde: getb monk");
-		fprintf(stderr, "%s\n", check.text.c_str());
-		check = interface->send("targ norn dde: getb cnam");
-		fprintf(stderr, "%s\n", check.text.c_str());
-		check = interface->send("targ norn dde: getb ovvd");
-		fprintf(stderr, "%s\n", check.text.c_str());*/
+		return interface;
 	}
 
 #endif
@@ -295,24 +279,10 @@ std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 			interface = WindowsSMI::Open(current = *ptr);
 		}
 
-		if (interface)
-		{
-			interface->_name = current;
-			interface->_engine = "C2E";
-			auto version = interface->send("outv vmjr outs \" \" outv vmnr\n");
+		if (interface && interface->_name.size())
+			return interface;
 
-			if (version.isError)
-			{
-				fprintf(stderr, "%s", version.text.c_str());
-			}
-			else
-			{
-				int r = sscanf(version.text.c_str(), "%d %d", &interface->versionMajor, &interface->versionMinor);
-
-				if (r < 2)
-					fprintf(stderr, "failed to get version of engine.\n");
-			}
-		}
+		return nullptr;
 	}
 
 
@@ -325,28 +295,43 @@ std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 
 std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 {
-	auto interface = PosixSMI::Create();
+	auto p = PosixSMI::Create();
 
-	if (interface)
-	{
-		char buffer[256];
-		buffer[0] = 0;
-		interface->_engine = "C2E";
-		auto version = interface->send("outv vmjr outs \" \" outv vmnr\n outs \" \" outx gnam");
+	if(p && p->_name.size())
+		return p;
 
-		int r = sscanf(version.text.c_str(), "%d %d \"%255[^\"]\"", &interface->versionMajor, &interface->versionMinor, buffer);
-
-		if (r < 3)
-		{
-			fprintf(stderr, "failed to get version of engine.\n");
-			return nullptr;
-		}
-		else
-			interface->_name = *buffer == '"'? buffer+1 : buffer;
-	}
-
-	return interface;
+	return nullptr;
 }
 
 #endif
+#include <psapi.h>
+
+std::filesystem::path SharedMemoryInterface::GetWorkingDirectory(pid_t pid)
+{
+#ifdef _WIN32
+	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+	if (hProcess == NULL) {
+		return "";
+	}
+
+	wchar_t path[MAX_PATH];
+	if (GetModuleFileNameEx(hProcess, NULL, path, MAX_PATH) == 0) {
+		CloseHandle(hProcess);
+		return "";
+	}
+
+	CloseHandle(hProcess);
+	std::filesystem::path p(path);
+	return p.parent_path();
+#else
+	char path[PATH_MAX];
+	snprintf(path, sizeof(path), "/proc/%d/cwd", pid);
+	char resolved_path[PATH_MAX];
+	if (realpath(path, resolved_path) == NULL) {
+		return "";
+	}
+
+	return std::filesystem::path(resolved_path);
+#endif
+}
 

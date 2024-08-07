@@ -16,6 +16,7 @@ public:
 
 	std::string executeMacro(std::string& macro);
 	std::string getBrainActivity();
+	auto getPartnerPid() { return DdeSession::getPartnerPid(fVivariumString, fSessionString); }
 
 	HSZ fVivariumString{};
 	HSZ fMacroString{};

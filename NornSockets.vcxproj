@@ -90,7 +90,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>F:\Programs\NornSockets\QR-Code-generator\c;F:\Programs\NornSockets\IXWebSocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programs\NornSockets\IXWebSocket;F:\Programs\NornSockets\QR-Code-generator\c</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,7 +108,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>F:\Programs\NornSockets\IXWebSocket</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programs\NornSockets\IXWebSocket;F:\Programs\NornSockets\QR-Code-generator\c</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>F:\Programs\NornSockets\QR-Code-generator\c;F:\Programs\NornSockets\IXWebSocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programs\NornSockets\IXWebSocket;F:\Programs\NornSockets\QR-Code-generator\c</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,7 +144,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>F:\Programs\NornSockets\IXWebSocket</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programs\NornSockets\IXWebSocket;F:\Programs\NornSockets\QR-Code-generator\c</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

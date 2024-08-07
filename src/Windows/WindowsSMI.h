@@ -19,6 +19,8 @@ struct Message;
 	bool isClosed() override;
 
 private:
+	void Initialize();
+
 	HANDLE memory_handle{};
 	Message* memory_ptr{};
 	HANDLE mutex{};
