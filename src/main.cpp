@@ -11,13 +11,28 @@
 #include <thread>
 #include <condition_variable>
 #include <mutex>
+#include <cstring>
 
 
+bool g_Verbose = false;
 
 using namespace std::chrono_literals;
 static std::atomic<bool> g_running{true};
 static std::condition_variable _mainSleep;
 // needed out here by win console handler (annoying)
+
+void split(std::vector<std::string_view> & out, std::string_view in, const char delim)
+{
+	out.clear();
+	
+	for(auto i = 0u, j = 0u; i < in.size(); i = j+1)
+	{
+		for(j = i; j < in.size() && in[j] != delim; ++j) {}
+		
+		out.push_back(in.substr(i, j-i));
+	}
+}
+
 
 bool IsRunning()
 {
@@ -57,8 +72,15 @@ BOOL WINAPI ConsoleHandler(DWORD signal) {
 }
 #endif
 
-int main()
+int main(int argc, const char * args[])
 {
+	for(int i = 0; i < argc; ++i)
+	{
+		if(strcmp("-v", args[i]) == 0
+		|| strcmp("--verbose", args[i]) == 0)
+			g_Verbose = true;
+	}
+
 // so signals can wake us up.
 	std::mutex dummy_mutex;
 	std::unique_lock lock(dummy_mutex);
@@ -86,6 +108,7 @@ int main()
 	std::unique_ptr<WebsocketServer>	   server(new WebsocketServer);
 	std::unique_ptr<SharedMemoryInterface> interface;
 	std::unique_ptr<DebugLog>			  debugLog;
+	std::vector<std::string_view>		  tokens;
 
 	bool isDebugLogOpen = false;
 	bool isC2E = false;
@@ -152,41 +175,12 @@ int main()
 				if (isDebugLogOpen)
 					isDebugLogOpen = !debugLog->isClosed();
 
-				size_t start = 0;
-				size_t curr = 0;
-				auto txt = response.text.data();
-
-				for (curr = response.text.find("ws", curr); curr != std::string::npos; curr = response.text.find("ws", curr))
+				split(tokens, response.text, '\n');
+				
+				for(auto tok : tokens)
 				{
-					auto line_end = response.text.find("\n", curr);
-
-					if (line_end == std::string::npos)
-						line_end = response.text.size() - 1;
-
-	// not a line begin
-					if (curr != 0 && response.text[curr - 1] != '\n')
-					{
-						curr = line_end;
-						continue;
-					}
-
-	// if we can't parse it it's nosie
-					if (!server->Parse(std::string_view(txt + curr, txt + line_end)))
-					{
-						curr = line_end;
-					}
-					else if (curr != 0)
-					{
-						wrote = true;
-						fprintf(stdout, "%.*s", int(curr-start), txt+start);
-						start = line_end+1;
-					}
-				}
-
-				if (start < response.text.size()-1)
-				{
-					wrote = true;
-					fprintf(stdout, "%.*s", int(response.text.size()-start), txt+start);
+					if (!server->Parse(tok))
+						fprintf(stdout, "%.*s\n", int(tok.size()), tok.data());					
 				}
 			}
 

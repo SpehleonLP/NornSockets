@@ -10,6 +10,9 @@
 #include <cstdio>
 #include <cstring>
 #include <string_view>
+#include <iostream>
+
+extern bool g_Verbose;
 
 void OnFatalError();
 
@@ -185,12 +188,6 @@ void WebsocketServer::OnConnection(std::weak_ptr<ix::WebSocket> webSocket, std::
 	}
 
 	agent->setOnMessageCallback(std::bind(&WebsocketServer::OnMessageCallback, this, webSocket, std::placeholders::_1));
-	
-	std::lock_guard lock(_mutex);
-	for (auto& item : agent->getSubProtocols())
-	{
-		socketsByProtocol.insert({ item, webSocket });
-	}
 }
 
 void WebsocketServer::OnMessageCallback(std::weak_ptr<ix::WebSocket> webSocket, const ix::WebSocketMessagePtr& msg)
@@ -198,16 +195,59 @@ void WebsocketServer::OnMessageCallback(std::weak_ptr<ix::WebSocket> webSocket, 
 	if (msg->type == ix::WebSocketMessageType::Open)
 	{
 		auto agent = webSocket.lock();
-		agent->disablePerMessageDeflate();
-
-		std::lock_guard lock(_mutex);
-		_allConnections.push_back(webSocket);
-
-		if (_interface)
+		
+		if(agent != nullptr)
 		{
-			char buffer[256];
-			snprintf(buffer, sizeof(buffer), "%s %s %d.%d %s", "OnGameOpened", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
-			agent->sendUtf8Text(buffer);
+			agent->disablePerMessageDeflate();
+
+			std::lock_guard lock(_mutex);
+			
+			// Get the client's requested protocols from the headers
+			std::string requestedProtocols = msg->openInfo.headers["sec-websocket-protocol"];
+
+			if(g_Verbose) fprintf(stderr, "Client requested protocols: %s\n", requestedProtocols.c_str());
+
+			// Parse comma-separated protocol list
+			// Note: The handshake is already complete - you can't change it now
+			// You can only use this info to route the connection appropriately
+			_allConnections.push_back(webSocket);
+
+			// Store by protocol for routing
+			if (!requestedProtocols.empty())
+			{
+			  // Parse the comma-separated list
+			  size_t start = 0;
+			  while (start < requestedProtocols.length())
+			  {
+				  // Skip whitespace
+				  while (start < requestedProtocols.length() &&
+						 std::isspace(requestedProtocols[start])) start++;
+
+				  size_t end = requestedProtocols.find(',', start);
+				  if (end == std::string::npos) end = requestedProtocols.length();
+
+				  std::string protocol = requestedProtocols.substr(start, end - start);
+
+				  // Trim trailing whitespace
+				  while (!protocol.empty() && std::isspace(protocol.back()))
+					  protocol.pop_back();
+
+				  if (!protocol.empty())
+				  {
+					  if(g_Verbose) fprintf(stderr, "Registered protocol: %s\n", protocol.c_str());
+					  socketsByProtocol.insert({protocol, webSocket});
+				  }
+
+				  start = end + 1;
+			  }
+			}
+
+			if (_interface)
+			{
+				char buffer[256];
+				snprintf(buffer, sizeof(buffer), "%s %s %d.%d %s", "OnGameOpened", _interface->_engine.c_str(), _interface->versionMajor, _interface->versionMinor, _interface->_name.c_str());
+				agent->sendUtf8Text(buffer);
+			}
 		}
 
 		return;
@@ -304,10 +344,10 @@ void WebsocketServer::OnMessageCallback(std::weak_ptr<ix::WebSocket> webSocket, 
 struct WebsocketServer::ParseResult
 {
 	std::string url;
-	int port;
+	int port{34013};
 	std::string message;
 	std::string protocol;
-	bool noMatch;
+	bool noMatch{true};
 };
 
 // this function looks for this stuff:
@@ -322,53 +362,71 @@ WebsocketServer::ParseResult WebsocketServer::GetParseResult(std::string_view st
 	result.noMatch = true;
 
 	// Helper lambda to find and extract a substring between two delimiters
-	auto extract = [&str](char start, char end) -> std::string_view {
-		auto startPos = str.find(start);
+	auto extract = [](std::string_view s, char start, char end) -> std::string_view {
+		auto startPos = s.find(start);
 		if (startPos == std::string_view::npos) return {};
-		auto endPos = str.find(end, startPos + 1);
+		auto endPos = s.find(end, startPos + 1);
 		if (endPos == std::string_view::npos) return {};
-		return str.substr(startPos + 1, endPos - startPos - 1);
+		return s.substr(startPos + 1, endPos - startPos - 1);
+	};
+
+	// Extract sub-protocol from brackets and advance past it
+	auto extractSubProtocol = [&extract](std::string_view& s) -> std::string_view {
+		auto subProto = extract(s, '[', ']');
+		if (!subProto.empty()) {
+			auto endBracket = s.find(']');
+			if (endBracket != std::string_view::npos) {
+				s.remove_prefix(endBracket + 1);
+			}
+		}
+		return subProto;
+	};
+
+	// Extract message after colon
+	auto extractMessage = [](std::string_view& s) -> std::string_view {
+		if (!s.empty() && s.front() == ':') {
+			s.remove_prefix(1);
+			return s;
+		}
+		return {};
 	};
 
 	// Check for ws:// or wss:// prefix
 	if (str.starts_with("ws://") || str.starts_with("wss://")) {
 		result.protocol = str.substr(0, str.find("://"));
-		str.remove_prefix(result.protocol.length() + 3);  // Remove protocol and ://
+		std::string_view remaining = str.substr(result.protocol.length() + 3);
 
 		// Extract URL and port
-		auto colonPos = str.find(':');
+		auto colonPos = remaining.find(':');
 		if (colonPos != std::string_view::npos) {
-			result.url = str.substr(0, colonPos);
-			str.remove_prefix(colonPos + 1);
+			result.url = remaining.substr(0, colonPos);
+			remaining.remove_prefix(colonPos + 1);
 
 			// Extract port
-			auto portEnd = str.find_first_not_of("0123456789");
+			auto portEnd = remaining.find_first_not_of("0123456789");
 			if (portEnd != std::string_view::npos) {
-				result.port = std::stoi(std::string(str.substr(0, portEnd)));
-				str.remove_prefix(portEnd);
+				result.port = std::stoi(std::string(remaining.substr(0, portEnd)));
+				remaining.remove_prefix(portEnd);
+			} else {
+				result.port = std::stoi(std::string(remaining));
+				remaining = {};
 			}
 		}
 
-		// Extract protocol (if present)
-		result.protocol = extract('[', ']');
-
-		// Extract message (if present)
-		if (!str.empty() && str.front() == ':') {
-			str.remove_prefix(1);
-			result.message = str;
-		}
+		// Extract sub-protocol and message
+		result.protocol = extractSubProtocol(remaining);
+		result.message = extractMessage(remaining);
 
 		result.noMatch = false;
 	}
 	// Check for ws[protocol]:message format
 	else if (str.starts_with("ws")) {
 		result.protocol = "ws";
-		result.protocol = extract('[', ']');
-
-		if (!str.empty() && str.front() == ':') {
-			str.remove_prefix(1);
-			result.message = str;
-		}
+		std::string_view remaining = str.substr(2);
+		
+		// Extract sub-protocol and message
+		result.protocol = extractSubProtocol(remaining);
+		result.message = extractMessage(remaining);
 
 		result.noMatch = false;
 	}
@@ -376,22 +434,38 @@ WebsocketServer::ParseResult WebsocketServer::GetParseResult(std::string_view st
 	return result;
 }
 
+
 bool WebsocketServer::Parse(std::string_view str, std::shared_ptr<ix::WebSocket> parent)
 {
 	auto parse = GetParseResult(str);
 
 	if(parse.noMatch || parse.protocol.empty())
 		return false;
+		
+	if(g_Verbose)
+	{
+		std::cout << "original message: " << str << "\n";
+		std::cout << "parsed message: {"
+			<< "\n\turl     :" << parse.url << ','
+			<< "\n\tport    :" << std::to_string(parse.port) << ','
+			<< "\n\tmessage :" << parse.message << ','
+			<< "\n\tprotocol:" << parse.protocol << ','
+			<< "\n}" << std::endl;
+	}	
 
 	std::lock_guard lock(_mutex);
 
 // rebuild it just so we're extra sure that it's right.
 	std::string _url = ((std::string("wss://") += parse.url) += ":") += std::to_string(port);
-
+	
+	if(g_Verbose)
+	{
+		std::cout << "rebuilt url:" << _url << std::endl;
+	}	
+	
 	if(parse.url.size())
 	{
 		auto range = socketsByProtocol.equal_range(parse.protocol);
-
 
 		std::shared_ptr<ix::WebSocket> match;
 
@@ -408,18 +482,28 @@ bool WebsocketServer::Parse(std::string_view str, std::shared_ptr<ix::WebSocket>
 
 		if(match == nullptr)
 		{
+			if(g_Verbose)
+			{
+				std::cout << "unable to find attached agent matching protocol:" << parse.protocol << std::endl;
+			}	
+	
 			match = std::make_shared<ix::WebSocket>();
 			match->setOnMessageCallback(std::bind(&WebsocketServer::OnMessageCallback, this, std::weak_ptr(match), std::placeholders::_1));
 			match->addSubProtocol(parse.protocol);
 			match->setUrl(_url);
 			match->start();
-
+				
 			_clients.push_back({
 				.socket = match,
 				.parent = std::weak_ptr(parent),
 				.isGameConnection = (parent == nullptr)
 			});
 
+			if(g_Verbose)
+			{
+				std::cout << "attempted to add new handler for protocol." << std::endl;
+			}	
+	
 			socketsByProtocol.insert({parse.protocol, std::weak_ptr(match)});
 		}
 		else
@@ -430,6 +514,11 @@ bool WebsocketServer::Parse(std::string_view str, std::shared_ptr<ix::WebSocket>
 					goto have_protocol;
 			}
 
+			if(g_Verbose)
+			{
+				std::cout << "attempted to add new handler for protocol." << std::endl;
+			}
+				
 			match->addSubProtocol(parse.protocol);
 			socketsByProtocol.insert({parse.protocol, std::weak_ptr(match)});
 
@@ -442,14 +531,42 @@ bool WebsocketServer::Parse(std::string_view str, std::shared_ptr<ix::WebSocket>
 	{
 		auto range = socketsByProtocol.equal_range(parse.protocol);
 
+		if(range.first == range.second && g_Verbose)
+		{
+			fprintf(stderr, "unable to find agent matching protocol: %.*s\nknown protocols: {", int(parse.protocol.size()), parse.protocol.data());
+			
+			for(auto & item : socketsByProtocol)
+			{
+				fprintf(stderr, "\t'%s',\n", item.first.c_str());
+			}
+			
+			fprintf(stderr, "}\n");
+		}
+
+
 		for (auto it = range.first; it != range.second; ++it)
 		{
 			auto agent = it->second.lock();
 
-			if(agent)
+			if(!agent)
 			{
-				if(parse.url.empty() || _url == agent->getUrl())
-					agent->sendUtf8Text(parse.message);
+				fprintf(stderr, "agent is null but wasn't removed?");
+				continue;
+			}
+			
+			if((parse.url.empty() || _url == agent->getUrl()))
+			{
+				if(g_Verbose)
+				{
+					std::cout << "sent message." << std::endl;
+				}
+			
+				agent->sendUtf8Text(parse.message);
+			}
+			
+			else if(g_Verbose)
+			{
+				std::cout << "agent doesn't match. url (" << agent->getUrl() << ")" << std::endl;
 			}
 		}
 	}

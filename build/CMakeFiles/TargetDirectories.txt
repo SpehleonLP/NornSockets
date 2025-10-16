@@ -1,0 +1,7 @@
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/NornSockets.dir
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/edit_cache.dir
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/rebuild_cache.dir
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/list_install_components.dir
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/install.dir
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/install/local.dir
+/home/anyuser/nornsockets/NornSockets/build/CMakeFiles/install/strip.dir

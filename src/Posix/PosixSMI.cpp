@@ -1,4 +1,5 @@
 #include "PosixSMI.h"
+#include <array>
 
 #ifndef _WIN32
 #include <netinet/tcp.h>

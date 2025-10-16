@@ -244,6 +244,7 @@ SharedMemoryInterface::Response SharedMemoryInterface::send(std::string const& t
 #ifdef _WIN32
 #include "Windows/WindowsSMI.h"
 #include "Windows/VivariumInterface.h"
+#include <psapi.h>
 
 std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 {
@@ -304,7 +305,7 @@ std::unique_ptr<SharedMemoryInterface> SharedMemoryInterface::Open()
 }
 
 #endif
-#include <psapi.h>
+
 
 std::filesystem::path SharedMemoryInterface::GetWorkingDirectory(pid_t pid)
 {
